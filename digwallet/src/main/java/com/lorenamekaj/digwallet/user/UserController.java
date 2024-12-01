@@ -2,9 +2,10 @@ package com.lorenamekaj.digwallet.user;
 
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import com.lorenamekaj.digwallet.user.dtos.UserDto;
+import com.lorenamekaj.digwallet.dtos.UserDto;
 
 @RestController
 @RequestMapping("api/v1/users")
@@ -17,6 +18,7 @@ public class UserController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('ADMIN')")
     public List<User> getUsers() {
         return userService.getAllUsers();
     }
@@ -30,7 +32,7 @@ public class UserController {
     public void registerUser(@RequestBody UserDto userDto) {
         User user = new User();
         user.setFullname(userDto.name());
-        user.setEmail(userDto.email());
+        user.setUsername(userDto.email());
         user.setPassword(userDto.password());
         userService.addUser(user);
     }

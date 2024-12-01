@@ -4,10 +4,9 @@ import com.lorenamekaj.digwallet.exceptions.DuplicateResourceException;
 import com.lorenamekaj.digwallet.exceptions.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.List;
-import com.lorenamekaj.digwallet.user.dtos.UserDto;
+import com.lorenamekaj.digwallet.dtos.UserDto;
 
 @Service
 
@@ -20,7 +19,7 @@ public class UserService {
     }
 
     public void addUser(User user) {
-        if (userRepository.existsByEmail(user.getEmail())) {
+        if (userRepository.existsByEmail(user.getUsername())) {
             throw new DuplicateResourceException("user with email already taken");
         }
         userRepository.save(user);
@@ -28,12 +27,12 @@ public class UserService {
 
 
     @Transactional
-    public List<User> getAllUsers(){
+    public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
     @Transactional
-    public User getUser(Long id){
+    public User getUser(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User with ID: " + id + " not found"));
     }
@@ -57,11 +56,11 @@ public class UserService {
             changes = true;
         }
 
-        if (userDto.email() != null && !userDto.email().equals(user.getEmail())) {
+        if (userDto.email() != null && !userDto.email().equals(user.getUsername())) {
             if (userRepository.existsByEmail(userDto.email())) {
                 throw new DuplicateResourceException("Email already taken");
             }
-            user.setEmail(userDto.email());
+            user.setUsername(userDto.email());
             changes = true;
         }
 

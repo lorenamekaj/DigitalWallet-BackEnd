@@ -1,4 +1,4 @@
-package com.lorenamekaj.digwallet.user;
+package com.lorenamekaj.digwallet.common;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

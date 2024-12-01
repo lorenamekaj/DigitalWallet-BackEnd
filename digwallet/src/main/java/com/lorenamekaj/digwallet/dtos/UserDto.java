@@ -1,4 +1,4 @@
-package com.lorenamekaj.digwallet.user.dtos;
+package com.lorenamekaj.digwallet.dtos;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
