@@ -12,7 +12,7 @@ import java.util.*;
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
     @Column(nullable = false) private String fullname;
     @Column(nullable = false, unique = true) private String email;
     @Column(nullable = false) private String password;
@@ -20,7 +20,7 @@ public class User implements UserDetails {
 
     public User() {}
 
-    public User(Integer id, String fullname, String email, String password, String role) {
+    public User(Long id, String fullname, String email, String password, String role) {
         this.id = id;
         this.fullname = fullname;
         this.email = email;
@@ -28,11 +28,11 @@ public class User implements UserDetails {
         this.role = role;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

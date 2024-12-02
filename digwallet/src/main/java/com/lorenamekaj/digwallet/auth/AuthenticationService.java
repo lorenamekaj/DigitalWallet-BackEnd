@@ -3,8 +3,11 @@ package com.lorenamekaj.digwallet.auth;
 import com.lorenamekaj.digwallet.dtos.CreateUserRequest;
 import com.lorenamekaj.digwallet.dtos.LoginUserRequest;
 import com.lorenamekaj.digwallet.exceptions.ResourceNotFoundException;
+import com.lorenamekaj.digwallet.profile.Profile;
+import com.lorenamekaj.digwallet.profile.ProfileService;
 import com.lorenamekaj.digwallet.user.User;
 import com.lorenamekaj.digwallet.user.UserRepository;
+import com.lorenamekaj.digwallet.user.UserService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,6 +26,10 @@ import java.util.Optional;
 public class AuthenticationService {
 
     private final UserRepository userRepository;
+
+    private final UserService userService;
+
+    private final ProfileService profileService;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -44,7 +51,11 @@ public class AuthenticationService {
 
         userRepository.save(user);
 
-        return Optional.of(user);
+        User user_ = userService.getUserByEmail(input.getEmail());
+
+        profileService.addProfile(user_);
+
+        return Optional.of(user_);
     }
 
     public User authenticate(LoginUserRequest input) {

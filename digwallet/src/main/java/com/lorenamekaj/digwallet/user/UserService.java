@@ -9,7 +9,6 @@ import java.util.List;
 import com.lorenamekaj.digwallet.dtos.UserDto;
 
 @Service
-
 public class UserService {
 
     private final UserRepository userRepository;
@@ -35,6 +34,12 @@ public class UserService {
     public User getUser(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User with ID: " + id + " not found"));
+    }
+
+    @Transactional
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User with email: " + email + " not found"));
     }
 
     @Transactional

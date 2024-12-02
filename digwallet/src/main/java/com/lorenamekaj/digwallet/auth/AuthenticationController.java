@@ -9,6 +9,7 @@ import com.lorenamekaj.digwallet.security.jwt.JwtService;
 import com.lorenamekaj.digwallet.user.User;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,10 +18,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
-@AllArgsConstructor
 @RequestMapping("/api/v1/users")
 @RestController
+@AllArgsConstructor
 public class AuthenticationController {
+
     private final JwtService jwtService;
     private final AuthenticationService authenticationService;
 
