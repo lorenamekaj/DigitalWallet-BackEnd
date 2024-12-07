@@ -1,13 +1,14 @@
 package com.lorenamekaj.digwallet.user;
 
+import com.lorenamekaj.digwallet.dtos.UserDto;
 import com.lorenamekaj.digwallet.exceptions.DuplicateResourceException;
 import com.lorenamekaj.digwallet.exceptions.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.List;
-import com.lorenamekaj.digwallet.user.dtos.UserDto;
+import com.lorenamekaj.digwallet.dtos.UserDto;
 
 @Service
 
@@ -26,7 +27,6 @@ public class UserService {
         userRepository.save(user);
     }
 
-
     @Transactional
     public List<User> getAllUsers(){
         return userRepository.findAll();
@@ -39,43 +39,16 @@ public class UserService {
     }
 
     @Transactional
+    public User getUserByEmail(String email) {
+        return userRepository.findUserByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User with email: " + email + " not found"));
+    }
+
+    @Transactional
     public void deleteById(Long id) {
         var user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         userRepository.delete(user);
 
     }
-
-    @Transactional
-    public void update(Long id, UserDto userDto) {
-        User user = getUser(id);
-
-        boolean changes = false;
-
-        if (userDto.name() != null && !userDto.name().equals(user.getFullname())) {
-            user.setFullname(userDto.name());
-            changes = true;
-        }
-
-        if (userDto.email() != null && !userDto.email().equals(user.getEmail())) {
-            if (userRepository.existsByEmail(userDto.email())) {
-                throw new DuplicateResourceException("Email already taken");
-            }
-            user.setEmail(userDto.email());
-            changes = true;
-        }
-
-        if (userDto.password() != null && !userDto.password().equals(user.getPassword())) {
-            user.setPassword(userDto.password());
-            changes = true;
-        }
-
-        if (!changes) {
-            throw new RuntimeException("No changes detected");
-        }
-
-    }
-
-
-
 }
