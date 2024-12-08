@@ -1,10 +1,9 @@
 package com.lorenamekaj.digwallet.user;
 
+import com.lorenamekaj.digwallet.dtos.UserRegisterDto;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import com.lorenamekaj.digwallet.dtos.UserDto;
@@ -31,24 +30,17 @@ public class UserController {
     }
 
     @PostMapping
-    public void registerUser(@RequestBody UserDto userDto) {
+    public void registerUser(@RequestBody UserRegisterDto userDto) {
         User user = new User();
         user.setFullname(userDto.name());
-        user.setUsername(userDto.email());
+        user.setEmail(userDto.email());
         user.setPassword(userDto.password());
         userService.addUser(user);
     }
-
-
-    @PutMapping("/{id}")
-    public ResponseEntity<String> updateUser(@PathVariable Long id, @Valid @RequestBody UserDto userDto) {
-        userService.update(id, userDto);
-        return ResponseEntity.ok("User updated successfully");
-    }
-
 
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable Long id) {
         userService.deleteById(id);
     }
+
 }

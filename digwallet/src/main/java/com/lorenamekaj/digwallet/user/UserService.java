@@ -1,14 +1,17 @@
 package com.lorenamekaj.digwallet.user;
 
+import com.lorenamekaj.digwallet.dtos.UserDto;
 import com.lorenamekaj.digwallet.exceptions.DuplicateResourceException;
 import com.lorenamekaj.digwallet.exceptions.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import com.lorenamekaj.digwallet.dtos.UserDto;
 
 @Service
+
 public class UserService {
 
     private final UserRepository userRepository;
@@ -18,27 +21,26 @@ public class UserService {
     }
 
     public void addUser(User user) {
-        if (userRepository.existsByEmail(user.getUsername())) {
+        if (userRepository.existsByEmail(user.getEmail())) {
             throw new DuplicateResourceException("user with email already taken");
         }
         userRepository.save(user);
     }
 
-
     @Transactional
-    public List<User> getAllUsers() {
+    public List<User> getAllUsers(){
         return userRepository.findAll();
     }
 
     @Transactional
-    public User getUser(Long id) {
+    public User getUser(Long id){
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User with ID: " + id + " not found"));
     }
 
     @Transactional
     public User getUserByEmail(String email) {
-        return userRepository.findByEmail(email)
+        return userRepository.findUserByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User with email: " + email + " not found"));
     }
 
@@ -49,37 +51,4 @@ public class UserService {
         userRepository.delete(user);
 
     }
-
-    @Transactional
-    public void update(Long id, UserDto userDto) {
-        User user = getUser(id);
-
-        boolean changes = false;
-
-        if (userDto.name() != null && !userDto.name().equals(user.getFullname())) {
-            user.setFullname(userDto.name());
-            changes = true;
-        }
-
-        if (userDto.email() != null && !userDto.email().equals(user.getUsername())) {
-            if (userRepository.existsByEmail(userDto.email())) {
-                throw new DuplicateResourceException("Email already taken");
-            }
-            user.setUsername(userDto.email());
-            changes = true;
-        }
-
-        if (userDto.password() != null && !userDto.password().equals(user.getPassword())) {
-            user.setPassword(userDto.password());
-            changes = true;
-        }
-
-        if (!changes) {
-            throw new RuntimeException("No changes detected");
-        }
-
-    }
-
-
-
 }
