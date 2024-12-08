@@ -9,6 +9,8 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ProfileService {
 
@@ -21,6 +23,11 @@ public class ProfileService {
     }
 
     @Transactional
+    public List<Profile> getAllProfiles() {
+        return profileRepository.findAll();
+    }
+
+    @Transactional
     public Profile getProfileByUserId(Long userId) {
         return profileRepository.findByUserId(userId).orElseThrow(() -> new ResourceNotFoundException("Profile not found for this user!"));
     }
@@ -30,8 +37,8 @@ public class ProfileService {
         if (profileRepository.existsByUserId(user.getId())) {
             throw new DuplicateResourceException("Profile already exists for user with id" + user.getId());
         }
-        if (userRepository.existsByEmail(user.getEmail())) {
-            throw new ResourceNotFoundException("User with id: " + user.getId() + " does not exist!");
+        if (!userRepository.existsByEmail(user.getEmail())) {
+            throw new ResourceNotFoundException("User with email: " + user.getEmail() + " does not exist!");
         }
         Profile profile = new Profile(
                 user, 50.0
@@ -39,6 +46,7 @@ public class ProfileService {
         profileRepository.save(profile);
     }
 
+    // This is for adding money
     @Transactional
     public void debitProfile(Long userId, double value) {
         User user = userRepository.findById(userId)
@@ -53,6 +61,7 @@ public class ProfileService {
         profileRepository.save(profile);
     }
 
+    // This is for removing money
     @Transactional
     public void creditProfile(Long userId, double value) {
         User user = userRepository.findById(userId)

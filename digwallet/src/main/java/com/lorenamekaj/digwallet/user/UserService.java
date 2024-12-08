@@ -1,30 +1,30 @@
 package com.lorenamekaj.digwallet.user;
 
-import com.lorenamekaj.digwallet.dtos.UserDto;
 import com.lorenamekaj.digwallet.exceptions.DuplicateResourceException;
 import com.lorenamekaj.digwallet.exceptions.ResourceNotFoundException;
+import com.lorenamekaj.digwallet.profile.ProfileService;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import com.lorenamekaj.digwallet.dtos.UserDto;
 
 @Service
-
 public class UserService {
 
     private final UserRepository userRepository;
+    private final ProfileService profileService;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, ProfileService profileService) {
         this.userRepository = userRepository;
+        this.profileService = profileService;
     }
 
     public void addUser(User user) {
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new DuplicateResourceException("user with email already taken");
         }
-        userRepository.save(user);
+        User user_ = userRepository.save(user);
+        profileService.addProfile(user_);
     }
 
     @Transactional

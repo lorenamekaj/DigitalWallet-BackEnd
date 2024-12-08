@@ -17,6 +17,8 @@ public class Profile {
     @Column(nullable = false)
     private Double balance;
 
+    public Profile() {}
+
     public Profile(Long id, User user, Double balance) {
         this.id = id;
         this.user = user;

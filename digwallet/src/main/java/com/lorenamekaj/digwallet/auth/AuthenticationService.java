@@ -3,13 +3,11 @@ package com.lorenamekaj.digwallet.auth;
 import com.lorenamekaj.digwallet.dtos.CreateUserRequest;
 import com.lorenamekaj.digwallet.dtos.LoginUserRequest;
 import com.lorenamekaj.digwallet.exceptions.ResourceNotFoundException;
-import com.lorenamekaj.digwallet.profile.Profile;
 import com.lorenamekaj.digwallet.profile.ProfileService;
 import com.lorenamekaj.digwallet.user.User;
 import com.lorenamekaj.digwallet.user.UserRepository;
 import com.lorenamekaj.digwallet.user.UserService;
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -21,9 +19,16 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.Optional;
 
-@AllArgsConstructor
 @Service
 public class AuthenticationService {
+
+    public AuthenticationService(UserRepository userRepository, UserService userService, ProfileService profileService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager) {
+        this.userRepository = userRepository;
+        this.userService = userService;
+        this.profileService = profileService;
+        this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
+    }
 
     private final UserRepository userRepository;
 
@@ -59,7 +64,7 @@ public class AuthenticationService {
     }
 
     public User authenticate(LoginUserRequest input) {
-        User user = userRepository.findByEmail(input.getEmail())
+        User user = userRepository.findUserByEmail(input.getEmail())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         authenticationManager.authenticate(
@@ -70,7 +75,7 @@ public class AuthenticationService {
     }
 
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByEmail(username)
+        return userRepository.findUserByEmail(username)
                 .map(user -> new org.springframework.security.core.userdetails.User(
                         user.getEmail(),
                         user.getPassword(),

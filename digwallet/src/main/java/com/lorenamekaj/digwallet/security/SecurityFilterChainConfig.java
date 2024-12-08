@@ -33,7 +33,8 @@ public class SecurityFilterChainConfig {
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(
                         "/api/v1/auth",
-                    "/api/v1/auth/**"
+                        "/api/v1/auth/sign-up",
+                        "/api/v1/auth/login"
                 )
                 .permitAll()
                 .anyRequest()

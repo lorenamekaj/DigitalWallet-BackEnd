@@ -36,7 +36,7 @@ public class JwtUtil {
                 .builder()
                 .setClaims(claims)
                 .setSubject(subject)
-                .setIssuer("odyssey")
+                .setIssuer("FIEKwallet")
                 .setIssuedAt(Date.from(Instant.now()))
                 .setExpiration(Date.from(Instant.now().plus(5, ChronoUnit.DAYS)))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)

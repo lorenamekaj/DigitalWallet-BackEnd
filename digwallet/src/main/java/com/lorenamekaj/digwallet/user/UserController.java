@@ -1,12 +1,9 @@
 package com.lorenamekaj.digwallet.user;
 
 import com.lorenamekaj.digwallet.dtos.UserRegisterDto;
-import jakarta.validation.Valid;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import com.lorenamekaj.digwallet.dtos.UserDto;
 
 @RestController
 @RequestMapping("/api/v1/users")
