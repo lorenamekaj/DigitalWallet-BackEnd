@@ -1,5 +1,6 @@
 package com.lorenamekaj.digwallet.transactions;
 
+import com.lorenamekaj.digwallet.dtos.TransactionDto;
 import com.lorenamekaj.digwallet.dtos.TransactionRegisterRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,11 @@ public class TransactionController {
     @GetMapping
     public List<Transactions> getTransactions() {
         return transactionsService.getAllTransactions();
+    }
+
+    @GetMapping("my-transactions")
+    public List<TransactionDto> getMyTransactions() {
+        return transactionsService.getAuthenticatedUserTransactions();
     }
 
     @PostMapping

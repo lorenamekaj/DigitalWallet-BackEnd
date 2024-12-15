@@ -13,4 +13,8 @@ public interface TransactionsRepository extends JpaRepository<Transactions, Long
 
     @Query("SELECT t FROM Transactions t WHERE t.earner.id = :userId")
     List<Transactions> findByUserId(@Param("userId") Long userId);
+
+    @Query("SELECT t FROM Transactions t WHERE t.earner.id = :userId OR t.payer.id = :userId")
+    List<Transactions> findAllByUserId(@Param("userId") Long userId);
 }
+

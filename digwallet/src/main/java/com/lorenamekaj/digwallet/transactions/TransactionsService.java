@@ -1,8 +1,10 @@
 package com.lorenamekaj.digwallet.transactions;
 
+import com.lorenamekaj.digwallet.dtos.TransactionDto;
 import com.lorenamekaj.digwallet.dtos.TransactionRegisterRequest;
 import com.lorenamekaj.digwallet.exceptions.PaymentRequestException;
 import com.lorenamekaj.digwallet.exceptions.ResourceNotFoundException;
+import com.lorenamekaj.digwallet.mappers.TransactionDtoMapper;
 import com.lorenamekaj.digwallet.paymentrequests.PaymentRequest;
 import com.lorenamekaj.digwallet.paymentrequests.PaymentRequestService;
 import com.lorenamekaj.digwallet.profile.ProfileService;
@@ -21,12 +23,14 @@ public class TransactionsService {
     private final UserService userService;
     private final ProfileService profileService;
     private final PaymentRequestService paymentRequestService;
+    private final TransactionDtoMapper transactionDtoMapper;
 
-    public TransactionsService(TransactionsRepository transactionsRepository, UserService userService, ProfileService profileService, PaymentRequestService paymentRequestService) {
+    public TransactionsService(TransactionsRepository transactionsRepository, UserService userService, ProfileService profileService, PaymentRequestService paymentRequestService, TransactionDtoMapper transactionDtoMapper) {
         this.transactionsRepository = transactionsRepository;
         this.userService = userService;
         this.profileService = profileService;
         this.paymentRequestService = paymentRequestService;
+        this.transactionDtoMapper = transactionDtoMapper;
     }
 
     public List<Transactions> getAllTransactions() {
@@ -41,6 +45,15 @@ public class TransactionsService {
     public List<Transactions> getTransactionsByUserid(Long userId) {
         User user = userService.getUser(userId);
         return transactionsRepository.findByUserId(user.getId());
+    }
+
+    @Transactional
+    List<TransactionDto> getAuthenticatedUserTransactions() {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return transactionsRepository.findAllByUserId(user.getId())
+                .stream()
+                .map(transactionDtoMapper)
+                .toList();
     }
 
     @Transactional
@@ -70,4 +83,5 @@ public class TransactionsService {
         paymentRequestService.exercisePaymentRequest(paymentRequest);
         transactionsRepository.save(transaction);
     }
+
 }

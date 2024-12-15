@@ -1,12 +1,15 @@
 package com.lorenamekaj.digwallet.profile;
 
+import com.lorenamekaj.digwallet.dtos.ProfileDto;
 import com.lorenamekaj.digwallet.exceptions.DuplicateResourceException;
 import com.lorenamekaj.digwallet.exceptions.ResourceNotFoundException;
+import com.lorenamekaj.digwallet.mappers.ProfileDtoMapper;
 import com.lorenamekaj.digwallet.user.User;
 import com.lorenamekaj.digwallet.user.UserRepository;
 import com.lorenamekaj.digwallet.user.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,10 +19,12 @@ public class ProfileService {
 
     private final ProfileRepository profileRepository;
     private final UserRepository userRepository;
+    private final ProfileDtoMapper profileDtoMapper;
 
-    public ProfileService(ProfileRepository profileRepository, UserRepository userRepository) {
+    public ProfileService(ProfileRepository profileRepository, UserRepository userRepository, ProfileDtoMapper profileDtoMapper) {
         this.profileRepository = profileRepository;
         this.userRepository = userRepository;
+        this.profileDtoMapper = profileDtoMapper;
     }
 
     @Transactional
@@ -65,7 +70,8 @@ public class ProfileService {
     @Transactional
     public void creditProfile(Long userId, double value) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User with ID: " + userId + " not found"));        Profile profile = getProfileByUserId(user.getId());
+                .orElseThrow(() -> new ResourceNotFoundException("User with ID: " + userId + " not found"));
+        Profile profile = getProfileByUserId(user.getId());
         double balance = profile.getBalance();
         if (value < 0) {
             throw new RuntimeException("Balance has to be positive!");
@@ -76,6 +82,14 @@ public class ProfileService {
         balance -= value;
         profile.setBalance(balance);
         profileRepository.save(profile);
+    }
+
+    @Transactional
+    public ProfileDto getAuthenticatedUserProfile() {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Profile profile = getProfileByUserId(user.getId());
+
+        return profileDtoMapper.apply(profile);
     }
 
 }
